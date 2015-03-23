@@ -17,6 +17,7 @@ Best settings for all relevant AMD cards (i.e. GCN cards) are below:
 
 ## Misc
 
+* Recommended driver for best results is Catalyst 14.12. The 15.3 beta driver is also excellent.
 * If you code, you should read the CL file. Really, I spent a lot of time commenting that.
 
 ## Donations

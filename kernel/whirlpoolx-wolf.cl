@@ -162,7 +162,7 @@ __kernel void WhirlpoolX(const ulong8 midstate, const ulong input0, const ulong 
 		and this compiler is bad even with simple code, sometimes.
 	*/
 	
-	__private uint gid = get_global_id(0), lid = get_local_id(0);
+	__private uint gid = get_global_id(0);
 	__private ulong8 n, h = midstate;
 	__local ulong T0[256], T1[256];
 	
@@ -181,6 +181,8 @@ __kernel void WhirlpoolX(const ulong8 midstate, const ulong input0, const ulong 
 	
 	#if WORKSIZE == 256
 		
+		__private uint lid = get_local_id(0);
+		
 		T0[lid] = T0_C[lid];
 		T1[lid] = rotate(T0_C[lid], 8UL);
 		
@@ -193,7 +195,7 @@ __kernel void WhirlpoolX(const ulong8 midstate, const ulong input0, const ulong 
 		
 	#else
 		
-		do
+		for(uint lid = get_local_id(0); lid < 256; lid += WORKSIZE)
 		{
 			T0[lid] = T0_C[lid];
 			T1[lid] = rotate(T0_C[lid], 8UL);
@@ -203,12 +205,12 @@ __kernel void WhirlpoolX(const ulong8 midstate, const ulong input0, const ulong 
 				T2[lid] = rotate(T0_C[lid], 16UL);
 				T3[lid] = rotate(T0_C[lid], 24UL);
 				
-			#endif
-			
-			lid += get_local_size(0);
-		} while(lid < 256);
+			#endif			
+		}
 		
 	#endif
+	
+	mem_fence(CLK_LOCAL_MEM_FENCE);
 	
 	n = (ulong8)(input0, (input1 & 0x00000000FFFFFFFF) | ((ulong)gid << 32), 0x0000000000000080, 0, 0, 0, 0, 0x8002000000000000) ^ h;
 

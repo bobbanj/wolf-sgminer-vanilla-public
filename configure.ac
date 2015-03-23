@@ -159,18 +159,8 @@ AC_LINK_IFELSE(
 LIBS=$SAVED_LIBS
 CFLAGS=$SAVED_CFLAGS
 
-has_winpthread=false
-if test "x$have_win32" = xtrue; then
-        has_winpthread=true
-        AC_CHECK_LIB(winpthread, nanosleep, , has_winpthread=false)
-        PTHREAD_LIBS=-lwinpthread
-fi
-
-if test "x$has_winpthread" != xtrue; then
-        AC_CHECK_LIB(pthread, pthread_create, ,
-                AC_MSG_ERROR([Could not find pthread library - please install libpthread]))
-        PTHREAD_LIBS=-lpthread
-fi
+AC_CHECK_LIB(pthread, pthread_create, , AC_MSG_ERROR([Could not find pthread library - please install libpthread]))
+PTHREAD_LIBS=-lpthread
 
 AC_ARG_ENABLE([adl],
 	[AC_HELP_STRING([--disable-adl],[Override detection and disable building with ADL])],

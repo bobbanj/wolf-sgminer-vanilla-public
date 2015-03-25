@@ -171,6 +171,8 @@ static cl_int create_opencl_command_queue(cl_command_queue *command_queue, cl_co
 {
 	cl_int status;
 	
+	#ifdef HAS_OCL2
+	
 	if(get_opencl_version(*device) < 2.0)
 	{
 		*command_queue = clCreateCommandQueue(*context, *device, *((const cl_command_queue_properties *)cq_properties), &status);
@@ -185,6 +187,15 @@ static cl_int create_opencl_command_queue(cl_command_queue *command_queue, cl_co
 		// Didn't work, same deal.
 		if(status != CL_SUCCESS) *command_queue = clCreateCommandQueueWithProperties(*context, *device, 0, &status);
 	}
+	
+	#else
+	
+	*command_queue = clCreateCommandQueue(*context, *device, *((const cl_command_queue_properties *)cq_properties), &status);
+	
+	// Didn't work, try again with no properties.
+	if(status != CL_SUCCESS) *command_queue = clCreateCommandQueue(*context, *device, 0, &status);
+	
+	#endif
 	
 	return status;
 }

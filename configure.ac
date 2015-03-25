@@ -156,6 +156,20 @@ AC_LINK_IFELSE(
 		OPENCL_FLAGS=
 		OPENCL_LIBS=
 		found_opencl=0])
+
+if test "$found_opencl" = 1; then
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+	#ifdef __APPLE_CC__
+	#include <OpenCL/opencl.h>
+	#else
+	#include <CL/cl.h>
+	#endif
+]],
+[[return clCreateCommandQueueWithProperties(NULL, NULL, NULL, NULL); ]])],
+[AC_DEFINE([HAS_OCL2], [1], [OpenCL library supports version 2.0 or later])],
+[])
+fi
+
 LIBS=$SAVED_LIBS
 CFLAGS=$SAVED_CFLAGS
 
